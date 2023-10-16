@@ -1,27 +1,72 @@
-version: "3.8"
-
-networks:
-    school_net:
-        external:
-            name: databases_db_net
-    nginx-proxy-net:
-        external:
-            name: nginx-proxy-manager_default
-
+version: "3.9"
+# mysql -u root --password="0passlla07" --execute="show master status;"
+volumes:
+  db_data:
+  
 services:
-        app:
-            restart: unless-stopped
-            build:
-                context: ./
-                dockerfile: Dockerfile
-            image: school-erp
-            container_name: erp-app
-            volumes:
-               - ./src:/var/www/html
-               - ./website/build:/var/www/html/website
-            ports:
-                - 3000
-                - 3001
-            networks:
-                - school_net
-                - nginx-proxy-net
+    # website:
+    #     container_name: website
+    #     build:
+    #         context:  .
+    #         dockerfile: Dockerfile
+    #     restart: unless-stopped
+    #     image: lla-website:latest
+    #     ports:
+    #     - 3000
+    #     volumes:
+    #     - /home/beznet/website:/var/www/html/website:rw
+      
+    app:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: lla-erp:latest
+        container_name: llaweb-app
+        volumes:
+        - /home/beznet/app/src:/var/www/html
+        - ./website/build:/var/www/html/website
+        ports:
+        - 3000
+        - 3001
+
+    mariadb:
+        image: mariadb:latest
+        container_name: lladb
+        restart: unless-stopped
+        ports:
+        - 3306
+        environment:
+            MYSQL_ROOT_PASSWORD: 0passlla07
+            MYSQL_DATABASE: lladb
+            MYSQL_USER: lla
+            MYSQL_PASSWORD: 14w0rdlla
+        volumes:
+        - db_data:/var/lib/mysql
+        - /home/beznet/dbdata/master/log:/var/log/mysql
+        - /home/beznet/dbdata/master/init:/docker-entrypoint-initdb.d
+        - /home/beznet/dbdata/master/conf.d:/etc/mysql/conf.d
+
+    adminer:
+        depends_on:
+        - mariadb
+        image: adminer
+        container_name: dbclient
+        restart: always
+        environment:
+            ADMINER_DESIGN: hydra
+            ADMINER_DEFAULT_SERVER: mariadb
+        ports:
+            - 8080
+    
+    nginx:
+        image: nginx:alpine
+        container_name: travellist-nginx
+        restart: unless-stopped
+        ports:
+        - 8000:80
+        volumes:
+        - ./:/var/www
+        - ./docker-compose/nginx:/etc/nginx/conf.d/
+        networks:
+        - travellist
