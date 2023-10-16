@@ -21,11 +21,10 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: lla-erp:latest
-        container_name: llaweb-app
+        image: edusms
+        container_name: webapp
         volumes:
-        - /home/beznet/app/src:/var/www/html
-        - ./website/build:/var/www/html/website
+        - ./src:/var/www/html
         ports:
         - 3000
         - 3001
@@ -47,17 +46,17 @@ services:
         - /home/beznet/dbdata/master/init:/docker-entrypoint-initdb.d
         - /home/beznet/dbdata/master/conf.d:/etc/mysql/conf.d
 
-    adminer:
-        depends_on:
-        - mariadb
-        image: adminer
-        container_name: dbclient
-        restart: always
-        environment:
-            ADMINER_DESIGN: hydra
-            ADMINER_DEFAULT_SERVER: mariadb
-        ports:
-            - 8080
+    # adminer:
+    #     depends_on:
+    #     - mariadb
+    #     image: adminer
+    #     container_name: dbclient
+    #     restart: always
+    #     environment:
+    #         ADMINER_DESIGN: hydra
+    #         ADMINER_DEFAULT_SERVER: mariadb
+    #     ports:
+    #         - 8080
     
     nginx:
         image: nginx:alpine
