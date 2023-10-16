@@ -1,0 +1,27 @@
+version: "3.8"
+
+networks:
+    school_net:
+        external:
+            name: databases_db_net
+    nginx-proxy-net:
+        external:
+            name: nginx-proxy-manager_default
+
+services:
+        app:
+            restart: unless-stopped
+            build:
+                context: ./
+                dockerfile: Dockerfile
+            image: school-erp
+            container_name: erp-app
+            volumes:
+               - ./src:/var/www/html
+               - ./website/build:/var/www/html/website
+            ports:
+                - 3000
+                - 3001
+            networks:
+                - school_net
+                - nginx-proxy-net
