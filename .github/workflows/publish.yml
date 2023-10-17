@@ -1,0 +1,37 @@
+name: Docker Image Publish
+
+on:
+  push:
+    branches: [ "master" ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create a .env file 
+        run: |
+          echo ${{ secrets.ENV_FILE }} | base64 --decode > ./.env
+
+      - name: Build & push Docker image
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: ${{ github.repository }}
+          tags: latest
+          registry: ghcr.io
+          dockerfile: ./docker/Dockerfile
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_PAT }}
+
+
+      # - name: Build and push Docker image
+      #   run: |
+      #     docker login -u ${{ github.actor }} -p ${{secrets.GH_PAT}} ${{ env.REGISTRY }}
+      #     docker build . -t ${{ github.repository }}:latest -f ${{ env.DOCKERFILE }}
+      #     docker push ${{ env.REGISTRY }}/${{ github.repository }}:latest

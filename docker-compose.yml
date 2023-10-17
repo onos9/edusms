@@ -20,14 +20,13 @@ services:
         restart: unless-stopped
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: docker/Dockerfile
         image: edusms
+        ports:
+            - 3000
         container_name: webapp
         volumes:
-        - ./src:/var/www/html
-        ports:
-        - 3000
-        - 3001
+        - ./:/var/www
 
     mariadb:
         image: mariadb:latest
@@ -42,9 +41,9 @@ services:
             MYSQL_PASSWORD: 14w0rdlla
         volumes:
         - db_data:/var/lib/mysql
-        - /home/beznet/dbdata/master/log:/var/log/mysql
-        - /home/beznet/dbdata/master/init:/docker-entrypoint-initdb.d
-        - /home/beznet/dbdata/master/conf.d:/etc/mysql/conf.d
+        - ./docker/log:/var/log/mysql
+        - ./docker/db/init:/docker-entrypoint-initdb.d
+        - ./docker/db/conf.d:/etc/mysql/conf.d
 
     # adminer:
     #     depends_on:
@@ -66,6 +65,4 @@ services:
         - 8000:80
         volumes:
         - ./:/var/www
-        - ./docker-compose/nginx:/etc/nginx/conf.d/
-        networks:
-        - travellist
+        - ./docker/nginx:/etc/nginx/conf.d/
