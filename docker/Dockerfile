@@ -1,7 +1,5 @@
 FROM php:8.2-fpm-alpine
 
-ENV IPE_GD_WITHOUTAVIF=1
-
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -15,16 +13,34 @@ RUN apk add --no-cache curl zip unzip \
     icu-dev \
     freetype-dev
 
-RUN docker-php-ext-install -j$(nproc) pdo_mysql bcmath mysqli opcache zip \
-    && docker-php-ext-configure gd --with-jpeg --with-freetype  intl \
-    && docker-php-ext-install -j$(nproc) gd intl \
+RUN IPE_GD_WITHOUTAVIF=1 docker-php-ext-install -j$(nproc) pdo_mysql bcmath mysqli opcache zip intl\
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
+    && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete
 
 # Create system user to run Composer and Artisan Commands
-RUN adduser -u 1000 -G www-data -D edusms
-# RUN mkdir -p /home/edusms/.composer && chown -R edusms:edusms /home/edusms
+
+RUN addgroup -S edusms \
+    && adduser -S -D edusms -h /home/edusms -s /bin/bash -G edusms \
+    && addgroup edusms root \
+    && addgroup edusms www-data 
+
+RUN mkdir -p /home/edusms/.composer && chown -R edusms:edusms /home/edusms
 
 # Set working directory
 WORKDIR /var/www
+
+COPY database/ database/
+COPY composer.json composer.json
+COPY composer.lock composer.lock
+
+RUN composer install \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --no-dev \
+    --prefer-dist
+
+RUN composer dump-autoload --no-scripts
 
 USER edusms
