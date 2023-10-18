@@ -15,19 +15,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
-      - name: Build & push Docker image
-        uses: mr-smithers-excellent/docker-build-push@v6
-        with:
-          image: ${{ github.repository }}
-          tags: latest
-          registry: ghcr.io
-          dockerfile: ./docker/Dockerfile
-          username: ${{ github.actor }}
-          password: ${{ secrets.GH_PAT }}
+      # - name: Build & push Docker image
+      #   uses: mr-smithers-excellent/docker-build-push@v6
+      #   with:
+      #     image: ${{ github.repository }}
+      #     tags: latest
+      #     registry: ghcr.io
+      #     dockerfile: ./docker/Dockerfile
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GH_PAT }}
 
 
-      # - name: Build and push Docker image
-      #   run: |
-      #     docker login -u ${{ github.actor }} -p ${{secrets.GH_PAT}} ${{ env.REGISTRY }}
-      #     docker build . -t ${{ github.repository }}:latest -f ${{ env.DOCKERFILE }}
-      #     docker push ${{ env.REGISTRY }}/${{ github.repository }}:latest
+      - name: Build and push Docker image
+        run: |
+          docker login -u ${{ github.actor }} -p ${{secrets.GH_PAT}} ${{ env.REGISTRY }}
+          docker build . -t ${{ github.repository }}:latest -f ${{ env.DOCKERFILE }}
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}:latest
