@@ -15,37 +15,36 @@ services:
     #     - 3000
     #     volumes:
     #     - /home/beznet/website:/var/www/html/website:rw
-      
+    
     app:
-        container_name: edusmsdb-app
+        container_name: edusms-app
         build:
             context: .
             dockerfile: docker/Dockerfile
         image: edusms
         restart: unless-stopped
-        # command: ["sh", "composer.sh"]
+        entrypoint: ["sh", "./docker/entrypoint.sh"]
         ports:
             - 3000
         volumes:
-            - ./:/var/www/
+            - ./:/var/www
 
     mariadb:
         container_name: edusms-db
         image: mariadb:latest
         restart: unless-stopped
         ports:
-        - 3306
+            - 3306
         environment:
             MYSQL_ROOT_PASSWORD: 0passlla07
             MYSQL_DATABASE: lladb
             MYSQL_USER: lla
             MYSQL_PASSWORD: 14w0rdlla
         volumes:
-        - db_data:/var/lib/mysql
-        - ./docker/log:/var/log/mysql
-        - ./docker/db/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
-        - ./docker/db/conf.d:/etc/mysql/conf.d
-
+            - db_data:/var/lib/mysql
+            - ./docker/log:/var/log/mysql
+            - ./docker/db/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+            - ./docker/db/conf.d:/etc/mysql/conf.d
 
     # adminer:
     #     depends_on:

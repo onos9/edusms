@@ -29,18 +29,4 @@ RUN mkdir -p /home/edusms/.composer && chown -R edusms:edusms /home/edusms
 
 # Set working directory
 WORKDIR /var/www
-
-COPY database/ database/
-COPY composer.json composer.json
-COPY composer.lock composer.lock
-
-RUN composer install \
-    --no-interaction \
-    --no-plugins \
-    --no-scripts \
-    --no-dev \
-    --prefer-dist
-
-RUN composer dump-autoload --no-scripts
-
 USER edusms

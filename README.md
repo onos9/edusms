@@ -18,5 +18,5 @@ You know! Smart Idea always comes to well planners. And Our INFIX is Smart for i
 
 ## Powerful Support
 Explore in new support world! It’s now faster & quicker. You’ll find us on Support Ticket, Email, Skype, WhatsApp.
-
+cp .env.example .env
 

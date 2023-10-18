@@ -2,7 +2,7 @@ node_modules
 public/hot
 vendor
 .env
-.env.backup
+.env.bkp
 .phpunit.result.cache
 phpcs.xml
 Homestead.json
