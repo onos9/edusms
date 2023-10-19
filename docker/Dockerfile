@@ -1,9 +1,6 @@
 FROM php:8.2-fpm-alpine
 
-# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install system dependencies
 RUN apk add --no-cache curl zip unzip \
     libpng-dev \ 
     libzip-dev	\
@@ -13,20 +10,20 @@ RUN apk add --no-cache curl zip unzip \
     icu-dev \
     freetype-dev
 
-RUN IPE_GD_WITHOUTAVIF=1 docker-php-ext-install -j$(nproc) pdo_mysql bcmath mysqli opcache zip intl\
-    && docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install -j$(nproc) gd \
+RUN IPE_GD_WITHOUTAVIF=1 docker-php-ext-install -j$(nproc) gd pdo_mysql bcmath mysqli opcache zip intl \
     && docker-php-source delete
 
-# Create system user to run Composer and Artisan Commands
+# RUN addgroup -S www \
+#     && adduser -S -D www -h /home/www -s /bin/bash -G www \
+#     && addgroup www root \
+#     && addgroup www www-data 
 
-RUN addgroup -S edusms \
-    && adduser -S -D edusms -h /home/edusms -s /bin/bash -G edusms \
-    && addgroup edusms root \
-    && addgroup edusms www-data 
+# RUN mkdir -p /home/www/.composer && chown -R www:www /home/www
 
-RUN mkdir -p /home/edusms/.composer && chown -R edusms:edusms /home/edusms
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Set working directory
 WORKDIR /var/www
-USER edusms
+
+CMD entrypoint.sh
+# USER www
