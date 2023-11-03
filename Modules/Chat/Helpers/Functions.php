@@ -23,17 +23,16 @@ if (!function_exists('createGroupPermission')) {
         if ($role_id == 1) return true;
         if ($role_id == 3) return false;
 
-        if ($role_id == 2){
-            if(app('general_settings')->get('chat_can_make_group')== 'yes'){
+        if ($role_id == 2) {
+            if (app('general_settings')->get('chat_can_make_group') == 'yes') {
                 return true;
             }
             return false;
         }
 
-        if(app('general_settings')->get('chat_teacher_staff_can_make_group')== 'yes'){
+        if (app('general_settings')->get('chat_teacher_staff_can_make_group') == 'yes') {
             return true;
         }
         return false;
-
     }
 }

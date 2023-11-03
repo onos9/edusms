@@ -4,6 +4,7 @@ namespace Modules\MenuManage\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Storage;
 
 class RouteServiceProvider extends ServiceProvider
 {

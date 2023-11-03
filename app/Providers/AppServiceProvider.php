@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Builder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Modules\MenuManage\Entities\SidebarNew;
 use Modules\RolePermission\Entities\InfixRole;
@@ -18,8 +19,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        
         try{
+
             Builder::defaultStringLength(191);
             view()->composer('backEnd.parentPanel.parent_dashboard', function ($view) {
                 $data =[
@@ -96,10 +97,10 @@ class AppServiceProvider extends ServiceProvider
             return $permission;
         });
 
-        $this->app->singleton('saasSettings', function () {
+        // $this->app->singleton('saasSettings', function () {
 
-            return \Modules\Saas\Entities\SaasSettings::where('saas_status', 0)->pluck('infix_module_id')->toArray();
-        });
+        //     return \Modules\Saas\Entities\SaasSettings::where('saas_status', 0)->pluck('infix_module_id')->toArray();
+        // });
 
 
         $this->app->singleton('sidebar_news', function () {

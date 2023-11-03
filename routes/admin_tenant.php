@@ -215,6 +215,9 @@ Route::group(['middleware' => ['XSS','subscriptionAccessUrl']], function () {
         Route::post('subject-update', ['as' => 'subject_update', 'uses' => 'Admin\Academics\SmSubjectController@update'])->middleware('userRolePermission:259');
         Route::get('subject-delete/{id}', ['as' => 'subject_delete', 'uses' => 'Admin\Academics\SmSubjectController@delete'])->middleware('userRolePermission:260');
 
+        // Objective route
+        Route::get('objectives', ['as' => 'objectives.index', 'uses' => 'Admin\Academics\SmObjectiveController@index']);
+
         //Class Routine
         // Route::get('class-routine', ['as' => 'class_routine', 'uses' => 'SmAcademicsController@classRoutine']);
         // Route::get('class-routine-create', ['as' => 'class_routine_create', 'uses' => 'SmAcademicsController@classRoutineCreate']);

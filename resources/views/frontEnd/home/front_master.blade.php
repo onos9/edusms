@@ -76,7 +76,7 @@
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
     <script>
         window._locale = '{{ app()->getLocale() }}';
-        window._rtl = {{ userRtlLtl()==1 ? "true" : "false" }};
+        window._rtl = '{{ userRtlLtl()==1 ? "true" : "false" }}';
     </script>
     @stack('css')
 </head>

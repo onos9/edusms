@@ -64,7 +64,8 @@
     "extra": {
         "laravel": {
             "dont-discover": [
-                "laravel/telescope"
+                "laravel/telescope",
+                "spondonit/school-service"
             ]
         }
     },

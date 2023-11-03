@@ -1,66 +1,46 @@
 version: "3.9"
-# mysql -u root --password="0passlla07" --execute="show master status;"
 volumes:
   db_data:
   
-services:
-    # website:
-    #     container_name: edusms-site
-    #     build:
-    #         context:  .
-    #         dockerfile: Dockerfile
-    #     restart: unless-stopped
-    #     image: lla-website:latest
-    #     ports:
-    #     - 3000
-    #     volumes:
-    #     - /home/beznet/website:/var/www/html/website:rw
-    
-    app:
-        container_name: edusms-app
+services:    
+    edusmsapp:
+        container_name: edusmsapp
+        depends_on:
+            - localdb
         build:
             context: .
             dockerfile: docker/Dockerfile
         image: edusms
-        # restart: unless-stopped
+        restart: unless-stopped
         volumes:
-            - ./:/var/www
-
-    mariadb:
-        container_name: edusms-db
+            - ./:/var/www/html
+    
+    nginx:
+        image: nginx:alpine
+        container_name: eduserver
+        depends_on:
+            - edusmsapp
+        restart: unless-stopped
+        ports:
+            - 8000:80
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    
+    localdb:
+        container_name: edusmsdb
         image: mariadb:latest
         restart: unless-stopped
         ports:
             - 3306
         environment:
-            MYSQL_ROOT_PASSWORD: 0passlla07
-            MYSQL_DATABASE: lladb
-            MYSQL_USER: lla
-            MYSQL_PASSWORD: 14w0rdlla
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
         volumes:
             - db_data:/var/lib/mysql
             - ./docker/log:/var/log/mysql
             - ./docker/db/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
             - ./docker/db/conf.d:/etc/mysql/conf.d
 
-    # adminer:
-    #     depends_on:
-    #     - mariadb
-    #     image: adminer
-    #     container_name: edusms-dbclient
-    #     restart: always
-    #     environment:
-    #         ADMINER_DESIGN: hydra
-    #         ADMINER_DEFAULT_SERVER: mariadb
-    #     ports:
-    #         - 8080
-    
-    nginx:
-        image: nginx:alpine
-        container_name: edusms-server
-        restart: unless-stopped
-        ports:
-        - 8000:80
-        volumes:
-        - ./:/var/www
-        - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf

@@ -18,7 +18,7 @@ jobs:
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
-          image: ${{ github.repository }}
+          image: php-fpm
           tags: latest
           registry: ghcr.io
           dockerfile: ./docker/Dockerfile

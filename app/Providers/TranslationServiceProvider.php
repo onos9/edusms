@@ -21,7 +21,7 @@ class TranslationServiceProvider extends ServiceProvider
     public function boot()
     {
         // Cache::forget('translations');
-        if (Storage::exists('.app_installed') && Storage::get('.app_installed') && DB::connection()->getDatabaseName() != '') {
+        if (DB::connection()->getDatabaseName() != '') {
             if (Schema::hasTable('sm_languages')) {
                 if (is_null(app('general_settings')->get('chat_language_cache'))) {
 

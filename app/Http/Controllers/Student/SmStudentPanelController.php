@@ -188,7 +188,7 @@ class SmStudentPanelController extends Controller
             $records = studentRecords(null, $student_detail->id)->with('studentAttendance')->get();
             $academic_years = SmAcademicYear::where('active_status', '=', 1)->where('school_id', Auth::user()->school_id)->get();
 
-            return view('backEnd.studentPanel.student_attendance', compact( 'days', 'year', 'month', 'current_day', 'student_detail', 'academic_years','records'));
+            return view('backEnd.studentPanel.student_attendance', compact('days', 'year', 'month', 'current_day', 'student_detail', 'academic_years', 'records'));
         } catch (\Exception $e) {
 
             Toastr::error('Operation Failed', 'Failed');
@@ -196,14 +196,14 @@ class SmStudentPanelController extends Controller
         }
     }
 
-    public function studentMyAttendancePrint($id,$month, $year)
+    public function studentMyAttendancePrint($id, $month, $year)
     {
         try {
             $login_id = Auth::user()->id;
             $student_detail = SmStudent::where('user_id', $login_id)->first();
             $current_day = date('d');
             $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-            $attendances = SmStudentAttendance::where('student_record_id',$id)->where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->where('attendance_date', 'like', $year . '-' . $month . '%')->where('school_id', Auth::user()->school_id)->get();
+            $attendances = SmStudentAttendance::where('student_record_id', $id)->where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->where('attendance_date', 'like', $year . '-' . $month . '%')->where('school_id', Auth::user()->school_id)->get();
             $customPaper = array(0, 0, 700.00, 1000.80);
             $pdf = PDF::loadView(
                 'backEnd.studentPanel.my_attendance_print',
@@ -240,7 +240,7 @@ class SmStudentPanelController extends Controller
             }
 
             $student_detail = SmStudent::where('user_id', $user_id)->first();
-            $student =$student_detail ;
+            $student = $student_detail;
             $data['bank_info'] = SmPaymentMethhod::where('method', 'Bank')->where('school_id', Auth::user()->school_id)->first();
             $data['cheque_info'] = SmPaymentMethhod::where('method', 'Cheque')->where('school_id', Auth::user()->school_id)->first();
             $records = studentRecords(null, $student_detail->id)->get();
@@ -255,12 +255,12 @@ class SmStudentPanelController extends Controller
                 ->join('sm_staffs', 'sm_staffs.id', '=', 'sm_vehicles.driver_id')
                 ->first();
 
-            if($student_detail->parent_id){
+            if ($student_detail->parent_id) {
                 $siblings = SmStudent::where('parent_id', $student_detail->parent_id)->where('id', '!=', $id)->status()->withoutGlobalScope(StatusAcademicSchoolScope::class)->get();
-            } else{
+            } else {
                 $siblings = collect();
             }
-           
+
             $fees_assigneds = SmFeesAssign::where('student_id', $student_detail->id)
                 ->where('record_id', $records->pluck('id')->toArray())
                 ->where('school_id', Auth::user()->school_id)
@@ -321,22 +321,22 @@ class SmStudentPanelController extends Controller
                 ->where('academic_id', getAcademicId())
                 ->where('school_id', Auth::user()->school_id)
                 ->get();
-            if(moduleStatusCheck('OnlineExam')){
+            if (moduleStatusCheck('OnlineExam')) {
                 $result_views = InfixStudentTakeOnlineExam::where('active_status', 1)
-                ->where('status', 2)
-                ->where('academic_id', getAcademicId())
-                ->where('student_id', @Auth::user()->student->id)
-                ->where('school_id', Auth::user()->school_id)
-                ->get();
-            }else{
+                    ->where('status', 2)
+                    ->where('academic_id', getAcademicId())
+                    ->where('student_id', @Auth::user()->student->id)
+                    ->where('school_id', Auth::user()->school_id)
+                    ->get();
+            } else {
                 $result_views = SmStudentTakeOnlineExam::where('active_status', 1)
-                ->where('status', 2)
-                ->where('academic_id', getAcademicId())
-                ->where('student_id', @Auth::user()->student->id)
-                ->where('school_id', Auth::user()->school_id)
-                ->get();
+                    ->where('status', 2)
+                    ->where('academic_id', getAcademicId())
+                    ->where('student_id', @Auth::user()->student->id)
+                    ->where('school_id', Auth::user()->school_id)
+                    ->get();
             }
-             
+
 
 
             $paymentMethods = SmPaymentMethhod::whereNotIn('method', ["Cash", "Wallet"])
@@ -351,10 +351,8 @@ class SmStudentPanelController extends Controller
                 $walletAmounts = WalletTransaction::where('user_id', Auth::user()->id)
                     ->where('school_id', Auth::user()->school_id)
                     ->get();
-
             } else {
                 $walletAmounts = 0;
-
             }
 
             $custom_field_data = $student_detail->custom_field;
@@ -376,16 +374,16 @@ class SmStudentPanelController extends Controller
             }
             $departmentSubjects = null;
             $next_subjects = null;
-            $next_semester_label = null;           
+            $next_semester_label = null;
             $canChoose = false;
             $unSettings = null;
             if (moduleStatusCheck('University')) {
                 $lastRecord = studentRecords(null, $student_detail->id)
-                ->where('is_default', 1)
-                ->orderBy('id', 'DESC')->first();
+                    ->where('is_default', 1)
+                    ->orderBy('id', 'DESC')->first();
                 $labelIds = StudentRecord::where('student_id', $student_detail->id)
-                        ->where('school_id', auth()->user()->school_id)
-                        ->pluck('un_semester_label_id')->toArray();
+                    ->where('school_id', auth()->user()->school_id)
+                    ->pluck('un_semester_label_id')->toArray();
                 $next_semester_label = UnSemesterLabel::whereNotIn('id', $labelIds)
                     ->where('id', '!=', $lastRecord->un_semester_label_id)
                     ->first();
@@ -396,136 +394,137 @@ class SmStudentPanelController extends Controller
 
                 $departmentSubjects = $lastRecord->withOutPreSubject;
                 $unSettings = UniversitySetting::where('school_id', auth()->user()->school_id)
-                            ->where('un_academic_id', getAcademicId())
-                            ->first();
+                    ->where('un_academic_id', getAcademicId())
+                    ->first();
 
                 $lastRecordCreatedDate = $student_detail->lastRecord->value('created_at')->format('Y-m-d');
 
                 if ($unSettings) {
-                    if ($unSettings->choose_subject==1) {
+                    if ($unSettings->choose_subject == 1) {
                         $endDate = Carbon::parse($lastRecordCreatedDate)->addDay($unSettings->end_day)->format('Y-m-d');
                         $now = Carbon::now()->format('Y-m-d');
                         if ($now <= $endDate) {
-                            $canChoose = true ;
+                            $canChoose = true;
                         }
                     }
                 }
-
             }
             $payment_gateway = SmPaymentMethhod::first();
-            if(moduleStatusCheck('University')){
+            if (moduleStatusCheck('University')) {
                 $student_id = $student_detail->id;
                 $studentDetails = SmStudent::find($student_id);
-                $studentRecordDetails = StudentRecord::where('student_id',$student_id);
+                $studentRecordDetails = StudentRecord::where('student_id', $student_id);
                 $studentRecords = $studentRecordDetails->groupBy('un_academic_id')->get();
-                $print =1;
-                return view('backEnd.studentPanel.my_profile',
-                compact(
-                    'next_subjects',
-                    'unSettings',
-                    'departmentSubjects',
-                    'next_semester_label',
-                    'canChoose',
-                    'driver',
-                    'academic_year',
-                    'student_detail',
-                    'fees_assigneds',
-                    'fees_discounts',
-                    'exams',
-                    'documents',
-                    'timelines',
-                    'siblings',
-                    'grades',
-                    'exam_terms',
-                    'result_views',
-                    'leave_details',
-                    'optional_subject_setup',
-                    'student_optional_subject',
-                    'maxgpa',
-                    'failgpaname',
-                    'custom_field_values',
-                    'paymentMethods',
-                    'walletAmounts',
-                    'bankAccounts',
-                    'records',
-                    'studentDetails',
-                    'studentRecordDetails',
-                    'studentRecords',
-                    'print',
-                    'payment_gateway',
-                    'student',
-                    'data'
-                ));
-            }else{
-            return view('backEnd.studentPanel.my_profile',
-                compact(
-                    'next_subjects',
-                    'unSettings',
-                    'departmentSubjects',
-                    'next_semester_label',
-                    'canChoose',
-                    'driver',
-                    'academic_year',
-                    'student_detail',
-                    'fees_assigneds',
-                    'fees_discounts',
-                    'exams',
-                    'documents',
-                    'timelines',
-                    'siblings',
-                    'grades',
-                    'exam_terms',
-                    'result_views',
-                    'leave_details',
-                    'optional_subject_setup',
-                    'student_optional_subject',
-                    'maxgpa',
-                    'failgpaname',
-                    'custom_field_values',
-                    'paymentMethods',
-                    'walletAmounts',
-                    'bankAccounts',
-                    'records',
-                    'payment_gateway',
-                    'student',
-                    'data'
-                ));
+                $print = 1;
+                return view(
+                    'backEnd.studentPanel.my_profile',
+                    compact(
+                        'next_subjects',
+                        'unSettings',
+                        'departmentSubjects',
+                        'next_semester_label',
+                        'canChoose',
+                        'driver',
+                        'academic_year',
+                        'student_detail',
+                        'fees_assigneds',
+                        'fees_discounts',
+                        'exams',
+                        'documents',
+                        'timelines',
+                        'siblings',
+                        'grades',
+                        'exam_terms',
+                        'result_views',
+                        'leave_details',
+                        'optional_subject_setup',
+                        'student_optional_subject',
+                        'maxgpa',
+                        'failgpaname',
+                        'custom_field_values',
+                        'paymentMethods',
+                        'walletAmounts',
+                        'bankAccounts',
+                        'records',
+                        'studentDetails',
+                        'studentRecordDetails',
+                        'studentRecords',
+                        'print',
+                        'payment_gateway',
+                        'student',
+                        'data'
+                    )
+                );
+            } else {
+                return view(
+                    'backEnd.studentPanel.my_profile',
+                    compact(
+                        'next_subjects',
+                        'unSettings',
+                        'departmentSubjects',
+                        'next_semester_label',
+                        'canChoose',
+                        'driver',
+                        'academic_year',
+                        'student_detail',
+                        'fees_assigneds',
+                        'fees_discounts',
+                        'exams',
+                        'documents',
+                        'timelines',
+                        'siblings',
+                        'grades',
+                        'exam_terms',
+                        'result_views',
+                        'leave_details',
+                        'optional_subject_setup',
+                        'student_optional_subject',
+                        'maxgpa',
+                        'failgpaname',
+                        'custom_field_values',
+                        'paymentMethods',
+                        'walletAmounts',
+                        'bankAccounts',
+                        'records',
+                        'payment_gateway',
+                        'student',
+                        'data'
+                    )
+                );
             }
-
         } catch (\Exception $e) {
             DB::rollback();
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
         }
-
     }
 
     public function studentUpdate(SmStudentAdmissionRequest $request)
-    { 
+    {
         try {
-             $student_detail = SmStudent::find($request->id);
-             $validator = Validator::make($request->all(), $this->generateValidateRules("student_registration", $student_detail));
+            $student_detail = SmStudent::find($request->id);
+            $validator = Validator::make($request->all(), $this->generateValidateRules("student_registration", $student_detail));
             if ($validator->fails()) {
                 $errors = $validator->errors();
                 foreach ($errors->all() as $error) {
-                Toastr::error(str_replace('custom f.', '', $error), 'Failed');
+                    Toastr::error(str_replace('custom f.', '', $error), 'Failed');
                 }
                 return redirect()->back()->withInput();
             }
             // custom field validation End
-        
-        
+
+
             $destination = 'public/uploads/student/document/';
             $student_file_destination = 'public/uploads/student/';
             $student = SmStudent::find($request->id);
-           
+
             $academic_year = $request->session ? SmAcademicYear::find($request->session) : '';
             DB::beginTransaction();
-           
+
             if ($student) {
                 $username = $request->phone_number ? $request->phone_number : $request->admission_number;
                 $phone_number = $request->phone_number ? $request->phone_number : null;
-                $user_stu =$this->addUser($student_detail->user_id, 2, $username, $request->email_address, $phone_number);
+                $user_stu = $this->addUser($student_detail->user_id, 2, $username, $request->email_address, $phone_number);
                 //sibling || parent info user update
                 if (($request->sibling_id == 0 || $request->sibling_id == 1) && $request->parent_id == "") {
                     $username = $request->guardians_phone ? $request->guardians_phone : $request->guardians_email;
@@ -533,7 +532,6 @@ class SmStudentPanelController extends Controller
                     $user_parent =  $this->addUser($student_detail->parents->user_id, 3, $username, $request->guardians_email, $phone_number);
 
                     $user_parent->toArray();
-
                 } elseif ($request->sibling_id == 0 && $request->parent_id != "") {
                     User::destroy($student_detail->parents->user_id);
                 } elseif (($request->sibling_id == 2 || $request->sibling_id == 1) && $request->parent_id != "") {
@@ -594,7 +592,7 @@ class SmStudentPanelController extends Controller
                     if ($request->filled('guardians_occupation')) {
                         $parent->guardians_occupation = $request->guardians_occupation;
                     }
-                    
+
                     if ($request->filled('relation')) {
                         $parent->guardians_relation = $request->relation;
                     }
@@ -610,7 +608,7 @@ class SmStudentPanelController extends Controller
                     if ($request->filled('is_guardian')) {
                         $parent->is_guardian = $request->is_guardian;
                     }
-                   
+
                     if ($request->filled('session')) {
                         $parent->created_at = $academic_year->year . '-01-01 12:00:00';
                     }
@@ -621,13 +619,13 @@ class SmStudentPanelController extends Controller
                 // student info update
                 $student = SmStudent::find($request->id);
                 if (($request->sibling_id == 0 || $request->sibling_id == 1) && $request->parent_id == "") {
-                        $student->parent_id = $parent->id;
+                    $student->parent_id = $parent->id;
                 } elseif ($request->sibling_id == 0 && $request->parent_id != "") {
-                        $student->parent_id = $request->parent_id;
+                    $student->parent_id = $request->parent_id;
                 } elseif (($request->sibling_id == 2 || $request->sibling_id == 1) && $request->parent_id != "") {
-                        $student->parent_id = $request->parent_id;
+                    $student->parent_id = $request->parent_id;
                 } elseif ($request->sibling_id == 2 && $request->parent_id == "") {
-                        $student->parent_id = $parent->id;
+                    $student->parent_id = $parent->id;
                 }
                 if ($request->filled('class')) {
                     $student->class_id = $request->class;
@@ -711,11 +709,11 @@ class SmStudentPanelController extends Controller
                 if ($request->filled('room_number')) {
                     $student->room_id = $request->room_number;
                 }
-                
+
                 if (!empty($request->vehicle)) {
                     $driver = SmVehicle::where('id', '=', $request->vehicle)
-                            ->select('driver_id')
-                            ->first();
+                        ->select('driver_id')
+                        ->first();
                     $student->vechile_id = $request->vehicle;
                     $student->driver_id = $driver->driver_id;
                 }
@@ -774,32 +772,31 @@ class SmStudentPanelController extends Controller
                 if ($request->customF) {
                     $dataImage = $request->customF;
                     foreach ($dataImage as $label => $field) {
-                    if (is_object($field) && $field != "") {
-                        $key = "";
+                        if (is_object($field) && $field != "") {
+                            $key = "";
 
-                    $maxFileSize = generalSetting()->file_size;
-                                $file = $field;
-                                $fileSize = filesize($file);
-                                $fileSizeKb = ($fileSize / 1000000);
-                                if ($fileSizeKb >= $maxFileSize) {
-                                    Toastr::error('Max upload file size ' . $maxFileSize . ' Mb is set in system', 'Failed');
-                                    return redirect()->back();
-                                }
-                                $file = $field;
-                                $key = $file->getClientOriginalName();
-                                $file->move('public/uploads/customFields/', $key);
-                                $dataImage[$label] = 'public/uploads/customFields/' . $key;
-
+                            $maxFileSize = generalSetting()->file_size;
+                            $file = $field;
+                            $fileSize = filesize($file);
+                            $fileSizeKb = ($fileSize / 1000000);
+                            if ($fileSizeKb >= $maxFileSize) {
+                                Toastr::error('Max upload file size ' . $maxFileSize . ' Mb is set in system', 'Failed');
+                                return redirect()->back();
                             }
+                            $file = $field;
+                            $key = $file->getClientOriginalName();
+                            $file->move('public/uploads/customFields/', $key);
+                            $dataImage[$label] = 'public/uploads/customFields/' . $key;
                         }
+                    }
 
-                        //Custom Field Start
-                        $student->custom_field_form_name = "student_registration";
-                        $student->custom_field = json_encode($dataImage, true);
-                        //Custom Field End
+                    //Custom Field Start
+                    $student->custom_field_form_name = "student_registration";
+                    $student->custom_field = json_encode($dataImage, true);
+                    //Custom Field End
 
                 }
-                if (moduleStatusCheck('Lead')==true) { 
+                if (moduleStatusCheck('Lead') == true) {
                     if ($request->filled('lead_city')) {
                         $student->lead_city_id = $request->lead_city;
                     }
@@ -810,13 +807,12 @@ class SmStudentPanelController extends Controller
                 $student->save();
                 DB::commit();
             }
-               
+
             // session null
             $update_stud = SmStudent::where('user_id', $student->user_id)->first('student_photo');
             Session::put('profile', $update_stud->student_photo);
             Toastr::success('Operation successful', 'Success');
             return redirect('student-profile');
-
         } catch (\Exception $e) {
             DB::rollback();
             Toastr::error('Operation Failed', 'Failed');
@@ -829,18 +825,17 @@ class SmStudentPanelController extends Controller
 
             $user = $user_id == null ? new User() : User::find($user_id);
             $user->role_id = $role_id;
-            if ($username !=null) {
+            if ($username != null) {
                 $user->username = $username;
             }
-            if ($email !=null) {
+            if ($email != null) {
                 $user->email = $email;
             }
-            if ($phone_number !=null) {
+            if ($phone_number != null) {
                 $user->phone_number = $phone_number;
             }
             $user->save();
             return $user;
-
         } catch (\Exception $e) {
             Log::info($e->getMessage());
         }
@@ -864,27 +859,26 @@ class SmStudentPanelController extends Controller
             $groups = SmStudentGroup::where('school_id', Auth::user()->school_id)->get();
             $sessions = SmAcademicYear::where('active_status', '=', '1')->where('school_id', Auth::user()->school_id)->get();
             $siblings = SmStudent::where('parent_id', $student->parent_id)->where('school_id', Auth::user()->school_id)->get();
-            $lead_city= [];
-            $sources= [];
-            if (moduleStatusCheck('Lead')==true) {
-                    $lead_city = \Modules\Lead\Entities\LeadCity::where('school_id', auth()->user()->school_id)->get(['id', 'city_name']);
-                    $sources = \Modules\Lead\Entities\Source::where('school_id', auth()->user()->school_id)->get(['id', 'source_name']);
+            $lead_city = [];
+            $sources = [];
+            if (moduleStatusCheck('Lead') == true) {
+                $lead_city = \Modules\Lead\Entities\LeadCity::where('school_id', auth()->user()->school_id)->get(['id', 'city_name']);
+                $sources = \Modules\Lead\Entities\Source::where('school_id', auth()->user()->school_id)->get(['id', 'source_name']);
             }
             $fields = SmStudentRegistrationField::where('school_id', auth()->user()->school_id)
-            ->when(auth()->user()->role_id == 2, function ($query) {
-                $query->where('student_edit', 1);
-            })
-            ->when(auth()->user()->role_id == 3, function ($query) {
-                $query->where('parent_edit', 1);
-            })
-            ->pluck('field_name')->toArray();
-            return view('backEnd.studentPanel.my_profile_update', compact('student', 'classes', 'religions', 'blood_groups', 'genders', 'route_lists', 'vehicles', 'dormitory_lists', 'categories', 'groups', 'sessions', 'siblings', 'driver_lists', 'lead_city', 'fields','sources'));
+                ->when(auth()->user()->role_id == 2, function ($query) {
+                    $query->where('student_edit', 1);
+                })
+                ->when(auth()->user()->role_id == 3, function ($query) {
+                    $query->where('parent_edit', 1);
+                })
+                ->pluck('field_name')->toArray();
+            return view('backEnd.studentPanel.my_profile_update', compact('student', 'classes', 'religions', 'blood_groups', 'genders', 'route_lists', 'vehicles', 'dormitory_lists', 'categories', 'groups', 'sessions', 'siblings', 'driver_lists', 'lead_city', 'fields', 'sources'));
         } catch (\Exception $e) {
 
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
         }
-
     }
     public function studentProfile(Request $request, $id = null)
     {
@@ -929,12 +923,16 @@ class SmStudentPanelController extends Controller
             $now = date('Y-m-d');
 
             if (moduleStatusCheck('OnlineExam') == true) {
-                $online_exams = InfixOnlineExam::where('active_status', 1)->where('status', 1
+                $online_exams = InfixOnlineExam::where('active_status', 1)->where(
+                    'status',
+                    1
                 )->where('class_id', $student_detail->class_id)->where('section_id', $student_detail->section_id)
                     // ->where('date', 'like', date('Y-m-d'))->where('start_time', '<', $now)->where('end_time', '>', $now)
                     ->where('academic_id', getAcademicId())->where('school_id', Auth::user()->school_id)->get();
             } else {
-                $online_exams = SmOnlineExam::where('active_status', 1)->where('status', 1
+                $online_exams = SmOnlineExam::where('active_status', 1)->where(
+                    'status',
+                    1
                 )->where('class_id', $student_detail->class_id)->where('section_id', $student_detail->section_id)
                     // ->where('date', 'like', date('Y-m-d'))->where('start_time', '<', $now)->where('end_time', '>', $now)
                     ->where('academic_id', getAcademicId())->where('school_id', Auth::user()->school_id)->get();
@@ -1027,18 +1025,18 @@ class SmStudentPanelController extends Controller
                 }
             }
             $student_detail = SmStudent::where('user_id', $user_id)->first();
-        
+
             $class_times = SmClassTime::where('type', 'class')->where('academic_id', getAcademicId())->where('school_id', Auth::user()->school_id)->get();
             $sm_weekends = SmWeekend::with('studentClassRoutine', 'studentClassRoutine.subject', 'studentClassRoutine.teacherDetail')->orderBy('order', 'ASC')->where('active_status', 1)->where('school_id', Auth::user()->school_id)->get();
-            if(moduleStatusCheck('University')){
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('un_academic_id',getAcademicId())->get();
-            }else{
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('academic_id',getAcademicId())->get();
+            if (moduleStatusCheck('University')) {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('un_academic_id', getAcademicId())->get();
+            } else {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->get();
             }
             $class_id = $student_detail->class_id;
             $section_id = $student_detail->section_id;
-           
-            return view('backEnd.studentPanel.class_routine', compact('class_times', 'class_id', 'section_id', 'sm_weekends','records'));
+
+            return view('backEnd.studentPanel.class_routine', compact('class_times', 'class_id', 'section_id', 'sm_weekends', 'records'));
         } catch (\Exception $e) {
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
@@ -1085,13 +1083,13 @@ class SmStudentPanelController extends Controller
                 ->where('academic_id', getAcademicId())
                 ->get();
 
-            if(moduleStatusCheck('University')){
+            if (moduleStatusCheck('University')) {
                 $student_id = $student_detail->id;
                 $studentDetails = SmStudent::find($student_id);
-                $studentRecordDetails = StudentRecord::where('student_id',$student_id);
-                $studentRecords = StudentRecord::where('student_id',$student_id)->groupBy('un_academic_id')->get();
-                return view('backEnd.studentPanel.student_result', compact('student_detail', 'exams', 'grades', 'exam_terms', 'failgpaname', 'optional_subject_setup', 'student_optional_subject', 'maxgpa', 'records','studentDetails','studentRecordDetails','studentRecords'));
-            }else{
+                $studentRecordDetails = StudentRecord::where('student_id', $student_id);
+                $studentRecords = StudentRecord::where('student_id', $student_id)->groupBy('un_academic_id')->get();
+                return view('backEnd.studentPanel.student_result', compact('student_detail', 'exams', 'grades', 'exam_terms', 'failgpaname', 'optional_subject_setup', 'student_optional_subject', 'maxgpa', 'records', 'studentDetails', 'studentRecordDetails', 'studentRecords'));
+            } else {
                 return view('backEnd.studentPanel.student_result', compact('student_detail', 'exams', 'grades', 'exam_terms', 'failgpaname', 'optional_subject_setup', 'student_optional_subject', 'maxgpa', 'records'));
             }
         } catch (\Exception $e) {
@@ -1127,7 +1125,7 @@ class SmStudentPanelController extends Controller
 
             if ($assign_subjects->count() == 0) {
                 Toastr::error('No Subject Assigned.', 'Failed');
-                return redirect('student-exam-schedule');
+                return redirect('api_student-exam-schedule');
             }
 
             $exams = SmExam::where('active_status', 1)->where('academic_id', getAcademicId())->where('school_id', Auth::user()->school_id)->get();
@@ -1143,7 +1141,7 @@ class SmStudentPanelController extends Controller
                 ->where('section_id', $section_id)
                 ->where('exam_term_id', $exam_type_id)->orderBy('date', 'ASC')->get();
 
-            return view('backEnd.studentPanel.exam_schedule', compact('exams', 'assign_subjects', 'class_id', 'section_id', 'exam_id', 'exam_schedule_subjects', 'assign_subject_check','exam_type_id', 'exam_periods', 'exam_routines','records'));
+            return view('backEnd.studentPanel.exam_schedule', compact('exams', 'assign_subjects', 'class_id', 'section_id', 'exam_id', 'exam_schedule_subjects', 'assign_subject_check', 'exam_type_id', 'exam_periods', 'exam_routines', 'records'));
         } catch (\Exception $e) {
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
@@ -1177,7 +1175,6 @@ class SmStudentPanelController extends Controller
                 ]
             )->setPaper('A4', 'landscape');
             return $pdf->stream('EXAM_SCHEDULE.pdf');
-
         } catch (\Exception $e) {
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
@@ -1240,22 +1237,22 @@ class SmStudentPanelController extends Controller
     public function studentHomework(Request $request, $id = null)
     {
         try {
-            
+
             $user = Auth::user();
             $student_detail = SmStudent::where('user_id', $user->id)->first();
-           
-            if(moduleStatusCheck('University')){
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('un_academic_id',getAcademicId())->get();
-            }else{
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('academic_id',getAcademicId())->get();
+
+            if (moduleStatusCheck('University')) {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('un_academic_id', getAcademicId())->get();
+            } else {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->get();
             }
 
-            if(moduleStatusCheck('University')){
-                $records = $student_detail->studentRecords; 
+            if (moduleStatusCheck('University')) {
+                $records = $student_detail->studentRecords;
             }
-            return view('backEnd.studentPanel.student_homework', compact( 'student_detail','records'));
+            return view('backEnd.studentPanel.student_homework', compact('student_detail', 'records'));
         } catch (\Exception $e) {
-           
+
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
         }
@@ -1272,7 +1269,8 @@ class SmStudentPanelController extends Controller
         }
     }
 
-    public function unStudentHomeworkView($sem_label_id, $homework){
+    public function unStudentHomeworkView($sem_label_id, $homework)
+    {
         try {
             $homeworkDetails = SmHomework::find($homework);
             $homework_id = $homework;
@@ -1281,7 +1279,6 @@ class SmStudentPanelController extends Controller
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
         }
-
     }
 
     public function addHomeworkContent($homework_id)
@@ -1384,9 +1381,9 @@ class SmStudentPanelController extends Controller
             }
 
             Toastr::success('Operation successful', 'Success');
-            if($request->status == 'lmsHomework'){
-                return redirect()->to(url('lms/watchCourse',$request->course_id));
-            }else{
+            if ($request->status == 'lmsHomework') {
+                return redirect()->to(url('lms/watchCourse', $request->course_id));
+            } else {
                 return redirect()->back();
             }
         } catch (\Exception $e) {
@@ -1411,16 +1408,16 @@ class SmStudentPanelController extends Controller
         try {
             $user = Auth::user();
             $student_detail = SmStudent::where('user_id', $user->id)->first();
-            if(moduleStatusCheck('University')){
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('un_academic_id',getAcademicId())->get();
-            }else{
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('academic_id',getAcademicId())->get();
+            if (moduleStatusCheck('University')) {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('un_academic_id', getAcademicId())->get();
+            } else {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->get();
             }
 
             $uploadContents = SmTeacherUploadContent::where('course_id', '=', null)
-            ->where('chapter_id', '=', null)
-            ->where('lesson_id', '=', null)
-            ->where('content_type', 'as')
+                ->where('chapter_id', '=', null)
+                ->where('lesson_id', '=', null)
+                ->where('content_type', 'as')
                 ->where(function ($query) use ($student_detail) {
                     $query->where('available_for_all_classes', 1)
                         ->orWhere([['class', $student_detail->class_id], ['section', $student_detail->section_id]]);
@@ -1443,7 +1440,7 @@ class SmStudentPanelController extends Controller
                 ->where('school_id', Auth::user()->school_id)
                 ->get();
 
-            return view('backEnd.studentPanel.assignmentList', compact('uploadContents', 'uploadContents2','records'));
+            return view('backEnd.studentPanel.assignmentList', compact('uploadContents', 'uploadContents2', 'records'));
         } catch (\Exception $e) {
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
@@ -1498,10 +1495,10 @@ class SmStudentPanelController extends Controller
         try {
             $user = Auth::user();
             $student_detail = SmStudent::where('user_id', $user->id)->first();
-            if(moduleStatusCheck('University')){
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('un_academic_id',getAcademicId())->get();
-            }else{
-                $records = StudentRecord::where('student_id',$student_detail->id)->where('academic_id',getAcademicId())->get();
+            if (moduleStatusCheck('University')) {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('un_academic_id', getAcademicId())->get();
+            } else {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->get();
             }
 
             $uploadContents = SmTeacherUploadContent::where('content_type', 'sy')
@@ -1516,7 +1513,7 @@ class SmStudentPanelController extends Controller
                 ->where('school_id', Auth::user()->school_id)
                 ->get();
 
-            return view('backEnd.studentPanel.studentSyllabus', compact('uploadContents', 'uploadContents2','records'));
+            return view('backEnd.studentPanel.studentSyllabus', compact('uploadContents', 'uploadContents2', 'records'));
         } catch (\Exception $e) {
             Toastr::error('Operation Failed', 'Failed');
             return redirect()->back();
@@ -1539,12 +1536,12 @@ class SmStudentPanelController extends Controller
                 ->where('academic_id', getAcademicId())
                 ->where('school_id', Auth::user()->school_id)
                 ->get();
-                
-                if(moduleStatusCheck('University')){
-                    $records = StudentRecord::where('student_id',$student_detail->id)->where('un_academic_id',getAcademicId())->get();
-                }else{
-                    $records = StudentRecord::where('student_id',$student_detail->id)->where('academic_id',getAcademicId())->get();
-                }
+
+            if (moduleStatusCheck('University')) {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('un_academic_id', getAcademicId())->get();
+            } else {
+                $records = StudentRecord::where('student_id', $student_detail->id)->where('academic_id', getAcademicId())->get();
+            }
 
             return view('backEnd.studentPanel.othersDownload', compact('uploadContents', 'uploadContents2', 'records'));
         } catch (\Exception $e) {
@@ -1558,10 +1555,10 @@ class SmStudentPanelController extends Controller
     {
         try {
             $user = Auth::user();
-            if(moduleStatusCheck('University')){
-                $records = StudentRecord::where('student_id',$user->student->id)->where('un_academic_id',getAcademicId())->get();
-            }else{
-                $records = StudentRecord::where('student_id',$user->student->id)->where('academic_id',getAcademicId())->get();
+            if (moduleStatusCheck('University')) {
+                $records = StudentRecord::where('student_id', $user->student->id)->where('un_academic_id', getAcademicId())->get();
+            } else {
+                $records = StudentRecord::where('student_id', $user->student->id)->where('academic_id', getAcademicId())->get();
             }
             return view('backEnd.studentPanel.student_subject', compact('records'));
         } catch (\Exception $e) {
@@ -2005,8 +2002,8 @@ class SmStudentPanelController extends Controller
     public function pendingLeave(Request $request)
     {
         try {
-            $apply_leaves = SmLeaveRequest::with('leaveDefine', 'student')->where([['active_status', 1], ['approve_status', 'P']])->where('academic_id', getAcademicId())->where('school_id',Auth::user()->school_id)->get();
-            $leave_types = SmLeaveType::where('active_status', 1)->where('academic_id', getAcademicId())->where('school_id',Auth::user()->school_id)->get();
+            $apply_leaves = SmLeaveRequest::with('leaveDefine', 'student')->where([['active_status', 1], ['approve_status', 'P']])->where('academic_id', getAcademicId())->where('school_id', Auth::user()->school_id)->get();
+            $leave_types = SmLeaveType::where('active_status', 1)->where('academic_id', getAcademicId())->where('school_id', Auth::user()->school_id)->get();
             $roles = InfixRole::where('id', 2)->where(function ($q) {
                 $q->where('school_id', Auth::user()->school_id)->orWhere('type', 'System');
             })->get();
@@ -2209,7 +2206,6 @@ class SmStudentPanelController extends Controller
                 $file_original = $file_name_array[array_key_last($file_name_array)];
                 $new_file_array[$key]['path'] = $file;
                 $new_file_array[$key]['name'] = $file_original;
-
             }
             $public_dir = public_path('uploads/homeworkcontent');
             $zip = new ZipArchive;
@@ -2230,5 +2226,4 @@ class SmStudentPanelController extends Controller
             return redirect()->back();
         }
     }
-
 }

@@ -23,6 +23,7 @@ class ProductMiddleware
      */
     public function handle($request, Closure $next)
     {
+
         date_default_timezone_set(timeZone());
         if (Auth::check()) {
             App::setLocale(userLanguage());

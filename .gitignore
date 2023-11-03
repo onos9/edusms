@@ -17,3 +17,4 @@ docker-compose.override.yml
 .idea
 .vscode
 /nbproject/private/
+.devcontainer.json

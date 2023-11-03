@@ -19,11 +19,11 @@ Route::group(['middleware' => ['XSS']], function () {
 
         // Fees
         Route::get('student-fees', ['as' => 'student_fees', 'uses' => 'Student\SmFeesController@studentFees'])->middleware('userRolePermission:20');
-        
+
         Route::post('studentPayByPaypal', 'SmCollectFeesByPaymentGateway@payByPaypal')->name('studentPayByPaypal');
         // Route::get('fees-payment-stripe/{fees_type}/{student_id}/{amount}', 'Student\SmFeesController@feesPaymentStripe');
         // Route::post('fees-payment-stripe-store', 'Student\SmFeesController@feesPaymentStripeStore');
-        
+
         // Online Exam
         Route::get('student-online-exam', ['as' => 'student_online_exam', 'uses' => 'Student\SmOnlineExamController@studentOnlineExam'])->middleware('userRolePermission:46');
         Route::get('take-online-exam/{id}', ['as' => 'take_online_exam', 'uses' => 'Student\SmOnlineExamController@takeOnlineExam']);
@@ -35,7 +35,7 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('student-answer-script/{exam_id}/{s_id}', ['as' => 'student_answer_script', 'uses' => 'Student\SmOnlineExamController@studentAnswerScript']);
 
         Route::get('student-view-online-exam-question/{id}', 'Student\SmOnlineExamController@viewOnlineExam')->name('student-online-exam-question-view');
-       
+
         // Class Timetable
         Route::get('student-class-routine', ['as' => 'student_class_routine', 'uses' => 'Student\SmStudentPanelController@classRoutine'])->middleware('userRolePermission:22');
 
@@ -48,9 +48,9 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('student-result', ['as' => 'student_result', 'uses' => 'Student\SmStudentPanelController@studentResult'])->middleware('userRolePermission:37');
 
         //student Exam Schedule
-        Route::get('student-exam-schedule', ['as' => 'student_exam_schedule', 'uses' => 'Student\SmStudentPanelController@studentExamSchedule'])->middleware('userRolePermission:38');
-        Route::any('student-exam-schedule-search', ['as' => 'student_exam_schedule_search', 'uses' => 'Student\SmStudentPanelController@studentExamScheduleSearch']);
-        Route::any('student-exam-schedule/print', ['as' => 'exam_schedule_print', 'uses' => 'SmExamRoutineController@examSchedulePrint']);
+        Route::get('api_student-exam-schedule', ['as' => 'student_exam_schedule', 'uses' => 'Student\SmStudentPanelController@studentExamSchedule'])->middleware('userRolePermission:38');
+        Route::any('api_student-exam-schedule-search', ['as' => 'student_exam_schedule_search', 'uses' => 'Student\SmStudentPanelController@studentExamScheduleSearch']);
+        Route::any('api_student-exam-schedule/print', ['as' => 'exam_schedule_print', 'uses' => 'SmExamRoutineController@examSchedulePrint']);
         //abunayem
         Route::get('student-routine-print/{class_id}/{section_id}/{exam_period_id}', 'SmExamRoutineController@examRoutinePrint')->name('student-routine-print');
 
@@ -83,16 +83,16 @@ Route::group(['middleware' => ['XSS']], function () {
 
         // Dormitory Rooms
         Route::get('student-dormitory', ['as' => 'student_dormitory', 'uses' => 'Student\SmStudentPanelController@studentDormitory'])->middleware('userRolePermission:55');
-        
+
         // Student Library Book list
         Route::get('student-library', ['as' => 'student_library', 'uses' => 'Student\SmStudentPanelController@studentBookList'])->middleware('userRolePermission:52');
-        
+
         // Student Library Book Issue
         Route::get('student-book-issue', ['as' => 'student_book_issue', 'uses' => 'Student\SmStudentPanelController@studentBookIssue'])->middleware('userRolePermission:53');
-        
+
         // Student Noticeboard
         Route::get('student-noticeboard', ['as' => 'student_noticeboard', 'uses' => 'Student\SmStudentPanelController@studentNoticeboard'])->middleware('userRolePermission:48');
-        
+
         // Student Teacher
         Route::get('student-teacher', ['as' => 'student_teacher', 'uses' => 'Student\SmStudentPanelController@studentTeacher'])->middleware('userRolePermission:50');
     });

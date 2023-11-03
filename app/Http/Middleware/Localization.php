@@ -23,9 +23,8 @@ class Localization
     {
 
 
-        if(Storage::exists('.app_installed') and Storage::get('.app_installed')){
-            App::setLocale(getUserLanguage());
-        }
+        App::setLocale(getUserLanguage());
+
 
         return $next($request);
     }

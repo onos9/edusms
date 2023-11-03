@@ -13,7 +13,7 @@
     <div class="requirements">
         <div class="row">
             <div class="col-md-12">
-                <h4>Serviver Requirements </h4>
+                <h4>Server Requirements </h4>
                 <hr class="mt-0">
             </div>
             @foreach ($server_checks as $server)
@@ -60,7 +60,7 @@
     <p class="text-center alert alert-success mt-40">
         All The Requirements look's Fine. Let's Dig in
     </p>
-    <a href="{{ route('service.license') }}" class="offset-3 col-sm-6 primary-btn fix-gr-bg  mb-20">
+    <a href="{{ route('service.database') }}" class="offset-3 col-sm-6 primary-btn fix-gr-bg  mb-20">
         {{ __('service::install.lets_go_next') }} </a>
 
     @endif

@@ -102,7 +102,7 @@ class CreateInfixModuleStudentParentInfosTable extends Migration
         -- Student Examination
         (36, 8, 0, '1', 1, 'Examination','','examinations','flaticon-test', 1, 1, 1, 1, '2019-07-25 02:21:21', '2019-07-25 04:24:22'),
         (37, 8, 36, '2', 1, 'Result','student-result','result','', 1, 1, 1, 1, '2019-07-25 02:21:21', '2019-07-25 04:24:22'),
-        (38, 8, 36, '2', 1, 'Exam Schedule','student-exam-schedule','exam_schedule','', 1, 1, 1, 1, '2019-07-25 02:21:21', '2019-07-25 04:24:22'),
+        (38, 8, 36, '2', 1, 'Exam Schedule','api_student-exam-schedule','exam_schedule','', 1, 1, 1, 1, '2019-07-25 02:21:21', '2019-07-25 04:24:22'),
 
         -- Student Leave
         (39, 9, 0, '1', 1, 'Leave','','leave','flaticon-slumber', 1, 1, 1, 1, '2019-07-25 02:21:21', '2019-07-25 04:24:22'),

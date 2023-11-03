@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,13 +12,11 @@
 |
 */
 
-Route::prefix('menumanage')->group(function() {
-  Route::name('menumanage.')->middleware('auth')->group(function () {
+Route::prefix('menumanage')->group(function () {
+	Route::name('menumanage.')->middleware('auth')->group(function () {
 
-  	Route::get('/', 'MenuManageController@index')->name('index');
-  	Route::post('menu-store','MenuManageController@store')->name('store.menu');
-	Route::get('reset','MenuManageController@reset')->name('reset');
-	
+		Route::get('/', 'MenuManageController@index')->name('index');
+		Route::post('menu-store', 'MenuManageController@store')->name('store.menu');
+		Route::get('reset', 'MenuManageController@reset')->name('reset');
+	});
 });
-});
- 
